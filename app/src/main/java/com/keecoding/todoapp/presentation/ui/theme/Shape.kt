@@ -1,4 +1,4 @@
-package com.keecoding.todoapp.ui.theme
+package com.keecoding.todoapp.presentation.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
