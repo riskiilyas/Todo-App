@@ -1,8 +1,6 @@
 package com.keecoding.todoapp.presentation.ui.screens.list
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -22,12 +20,56 @@ import com.keecoding.todoapp.data.models.Priority
 import com.keecoding.todoapp.presentation.components.PriorityItem
 import com.keecoding.todoapp.presentation.ui.theme.*
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.ui.Alignment
+import com.keecoding.todoapp.data.util.SearchAppBarState
+import com.keecoding.todoapp.presentation.vm.SharedViewModel
+
+
+@Composable
+fun ListAppBar(
+    sharedViewModel: SharedViewModel,
+    searchAppBarState: SearchAppBarState,
+    searchTextState: String
+) {
+    when(searchAppBarState) {
+        SearchAppBarState.CLOSED -> {
+            DefaultListAppBar(
+                onSearchClicked = {
+                    sharedViewModel.searchAppBarState.value = SearchAppBarState.OPENED
+                },
+                onSortClicked = {
+
+                },
+                onDeleteClicked = {
+
+                },
+                sharedViewModel
+            )
+        }
+
+        else -> {
+            SearchAppBar(
+                text = searchTextState,
+                onTextChanged = {
+                    sharedViewModel.searcTextState.value = it
+                },
+                onCloseClicked = {
+                    sharedViewModel.searchAppBarState.value = SearchAppBarState.CLOSED
+                },
+                onSearchClicked = {
+
+                }
+            )
+        }
+    }
+}
 
 @Composable
 fun DefaultListAppBar(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
-    onDeleteClicked: () -> Unit
+    onDeleteClicked: () -> Unit,
+    sharedViewModel: SharedViewModel
 ) {
     TopAppBar(
         title = {
@@ -38,14 +80,15 @@ fun DefaultListAppBar(
         actions = {
             DefaultListAppBarActions(
                 onSearchClicked = {
-
+                    onSearchClicked()
                 },
                 onSortClicked = {
 
                 },
                 onDeleteClicked = {
 
-                }
+                },
+                sharedViewModel = sharedViewModel
             )
         },
         backgroundColor = MaterialTheme.colors.topAppBarBackgroundColor
@@ -54,13 +97,14 @@ fun DefaultListAppBar(
 
 @Composable
 fun DefaultListAppBarActions(
+    sharedViewModel: SharedViewModel,
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
     onDeleteClicked: () -> Unit
 ) {
     SearchAction(onSearchClicked)
     SortAction(onSortClicked = onSortClicked)
-    DeleteAllAction(onDeleteClicked = onDeleteClicked)
+    MoreAction(onDeleteClicked = onDeleteClicked, sharedViewModel = sharedViewModel)
 }
 
 @Composable
@@ -119,11 +163,12 @@ fun SortAction(
 }
 
 @Composable
-fun DeleteAllAction(
+fun MoreAction(
+    sharedViewModel: SharedViewModel,
     onDeleteClicked: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-
+    val darkTheme = sharedViewModel.darkThemeState.collectAsState(initial = false)
     IconButton(
         onClick = { expanded = true}
     ) {
@@ -141,16 +186,43 @@ fun DeleteAllAction(
                 onDeleteClicked()
                 expanded = false
             }) {
-                Text(
-                    text = "Delete All",
-                    style = Typography.subtitle2,
-                    modifier = Modifier.padding(start = MEDIUM_PADDING)
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_delete_24),
-                    contentDescription = "Delete All",
-                    modifier = Modifier.padding(start = MEDIUM_PADDING)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Delete All",
+                        style = Typography.subtitle2,
+                        modifier = Modifier.padding(start = MEDIUM_PADDING)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_baseline_delete_24),
+                        contentDescription = "Delete All",
+                        modifier = Modifier.padding(start = LARGE_PADDING)
+                    )
+                }
+            }
+
+            DropdownMenuItem(onClick = {}) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Night Mode",
+                        style = Typography.subtitle2,
+                        modifier = Modifier.padding(start = MEDIUM_PADDING)
+                    )
+                    Switch(
+                        modifier = Modifier.padding(start = LARGE_PADDING),
+                        checked = darkTheme.value,
+                        onCheckedChange = {
+                            sharedViewModel.switchTheme()
+                        }
+                    )
+                }
             }
         }
     }
@@ -203,7 +275,11 @@ fun SearchAppBar(
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        onCloseClicked()
+                        if (text.isBlank()) {
+                            onCloseClicked()
+                        } else {
+                            onTextChanged("")
+                        }
                     }
                 ) {
                     Icon(
@@ -233,21 +309,21 @@ fun SearchAppBar(
 }
 
 
-@Composable
-@Preview
-private fun DefaultListAppBarPreview() {
-    DefaultListAppBar(
-        onSearchClicked = {
-
-        },
-        onSortClicked = {
-
-        },
-        onDeleteClicked = {
-
-        }
-    )
-}
+//@Composable
+//@Preview
+//private fun DefaultListAppBarPreview() {
+//    DefaultListAppBar(
+//        onSearchClicked = {
+//
+//        },
+//        onSortClicked = {
+//
+//        },
+//        onDeleteClicked = {
+//
+//        }
+//    )
+//}
 
 @Composable
 @Preview
