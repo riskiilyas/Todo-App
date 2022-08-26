@@ -9,7 +9,7 @@ import com.keecoding.todoapp.data.util.Constants.LIST_SCREEN
 import com.keecoding.todoapp.presentation.ui.screens.list.ListScreen
 
 fun NavGraphBuilder.listComposable(
-    navigateToTaskScreen: (Int) -> Unit
+    navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
     composable(
         route = LIST_SCREEN,
