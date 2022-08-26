@@ -24,10 +24,10 @@ class SharedViewModel @Inject constructor(
     private val app: Application
 ): ViewModel() {
 
-    val darkThemeState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val searchAppBarState: MutableState<SearchAppBarState> = mutableStateOf(SearchAppBarState.CLOSED)
     val searcTextState: MutableState<String> = mutableStateOf("")
 
+    val darkThemeState: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _allTasks = MutableStateFlow<List<TodoTask>>(emptyList())
     val allTasks = _allTasks as StateFlow<List<TodoTask>>
 
@@ -48,9 +48,13 @@ class SharedViewModel @Inject constructor(
 
     fun getAllTasks() {
         viewModelScope.launch {
-            repository.getAllTasks().collect {
-                _allTasks.value = it
-            }
+            repository.getAllTasks()
+                .onStart {
+
+                }
+                .collect {
+                    _allTasks.value = it
+                }
         }
     }
 

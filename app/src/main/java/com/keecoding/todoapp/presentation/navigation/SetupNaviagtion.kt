@@ -1,5 +1,6 @@
 package com.keecoding.todoapp.presentation.navigation
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
@@ -10,6 +11,7 @@ import com.keecoding.todoapp.presentation.navigation.destinations.listComposable
 import com.keecoding.todoapp.presentation.navigation.destinations.taskComposable
 import com.keecoding.todoapp.presentation.vm.SharedViewModel
 
+@ExperimentalMaterialApi
 @Composable
 fun SetupNavigation(
     navController: NavHostController,
