@@ -43,9 +43,7 @@ fun ListScreen(
     ) {
         ListContent(
             tasks = allTasks.value,
-            navigateToTaskScreen = {
-
-            }
+            navigateToTaskScreen = navigateToTaskScreen
         )
     }
 }

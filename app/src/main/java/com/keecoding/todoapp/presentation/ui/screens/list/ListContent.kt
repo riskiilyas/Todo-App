@@ -22,24 +22,25 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.keecoding.todoapp.R
 import com.keecoding.todoapp.data.models.Priority
 import com.keecoding.todoapp.data.models.TodoTask
+import com.keecoding.todoapp.data.util.RequestState
 import com.keecoding.todoapp.presentation.ui.theme.*
 
 @ExperimentalMaterialApi
 @Composable
 fun ListContent(
-    tasks: List<TodoTask>,
+    tasks: RequestState<List<TodoTask>>,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
-    if(tasks.isNotEmpty()) {
+    if(tasks is RequestState.Success) {
         LazyColumn {
             items(
-                count = tasks.size,
+                count = tasks.data.size,
                 key = { i ->
-                    tasks[i].id
+                    tasks.data[i].id
                 }
             ) { index ->
                 TaskItem(
-                    todoTask = tasks[index],
+                    todoTask = tasks.data[index],
                     navigateToTaskScreen = navigateToTaskScreen
                 )
             }

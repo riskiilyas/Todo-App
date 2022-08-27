@@ -1,22 +1,32 @@
 package com.keecoding.todoapp.presentation.navigation.destinations
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.keecoding.todoapp.data.util.Action
 import com.keecoding.todoapp.data.util.Constants
+import com.keecoding.todoapp.data.util.Constants.TASK_ARGUMENT_KEY
 import com.keecoding.todoapp.data.util.Constants.TASK_SCREEN
+import com.keecoding.todoapp.presentation.ui.screens.task.TaskScreen
+import com.keecoding.todoapp.presentation.vm.SharedViewModel
 
 fun NavGraphBuilder.taskComposable(
-    navigateToListScreen: (Action) -> Unit
+    navigateToListScreen: (Action) -> Unit,
+    sharedViewModel: SharedViewModel
 ) {
     composable(
         route = TASK_SCREEN,
-        arguments = listOf(navArgument(Constants.TASK_ARGUMENT_KEY) {
+        arguments = listOf(navArgument(TASK_ARGUMENT_KEY) {
             type = NavType.IntType
         })
-    ) {
+    ) { navBackStackEntry ->
+        val taskId = navBackStackEntry.arguments!!.getInt(TASK_ARGUMENT_KEY)
+        sharedViewModel.getSelectedTask(taskId)
 
+        val selectedTask by sharedViewModel.selectedTask.collectAsState()
+        TaskScreen(navigateToListScreen = navigateToListScreen, selectedTask = selectedTask)
     }
 }
