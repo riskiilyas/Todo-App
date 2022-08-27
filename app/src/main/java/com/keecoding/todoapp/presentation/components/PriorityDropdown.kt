@@ -1,6 +1,8 @@
 package com.keecoding.todoapp.presentation.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -30,35 +32,70 @@ fun PriorityDropDown(
         mutableStateOf(false)
     }
 
+    val angle: Float by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
+            .background(MaterialTheme.colors.background)
             .clickable {
                 expanded = true
             }
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                shape = MaterialTheme.shapes.small
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Canvas(
-            modifier = Modifier.size(PRIORITY_INDICATOR_SIZE)
+            modifier = Modifier
+                .size(PRIORITY_INDICATOR_SIZE)
+                .weight(1f)
         ) {
             drawCircle(color = priority.color)
         }
         Text(
             text = priority.name,
-            style = Typography.subtitle2
+            style = Typography.subtitle2,
+            modifier = Modifier.weight(8f)
         )
         IconButton(
             onClick = {expanded = true },
             modifier = Modifier
                 .alpha(ContentAlpha.medium)
-                .rotate(0f)
+                .rotate(angle)
+                .weight(1.5f)
         ) {
             Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = "DropDown")
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(fraction = 0.94f)
+        ) {
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onPrioritySelected(Priority.LOW)
+            }) {
+                PriorityItem(priority = Priority.LOW)
+            }
+
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onPrioritySelected(Priority.MEDIUM)
+            }) {
+                PriorityItem(priority = Priority.MEDIUM)
+            }
+
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onPrioritySelected(Priority.HIGH)
+            }) {
+                PriorityItem(priority = Priority.HIGH)
+            }
         }
     }
 }
